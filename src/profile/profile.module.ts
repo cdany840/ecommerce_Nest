@@ -22,6 +22,9 @@ import { User, UserSchema } from './entities/user.schema';
   ],
   providers: [
     ProfileService
+  ],
+  exports: [
+    MongooseModule
   ]
 })
 export class ProfileModule {}

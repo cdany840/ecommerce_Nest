@@ -19,11 +19,16 @@ export class ProfileService {
     return `This action returns all profile`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profile`;
+  async findOne(_id: string): Promise<User> {
+    try {
+      const userId = await this.userModel.findOne({_id});
+      return userId;
+    } catch (err) {
+      console.log(err);
+    }
   }
 
-  async update(id: string, updateProfileDto: UpdateProfileDto): Promise<User> {
+  async update(id: string, updateProfileDto: UpdateProfileDto){
     try {
       const updateUser = await this.userModel.findByIdAndUpdate(
         id,
@@ -38,12 +43,16 @@ export class ProfileService {
       throw new InternalServerErrorException('Something terribe happen!!!');
 
     }
-    
   }
 
   //-------------------------------------------------------------
 
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  async remove(id: string) {
+    try {
+      const userId = await this.userModel.findByIdAndDelete(id);
+      return userId;
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

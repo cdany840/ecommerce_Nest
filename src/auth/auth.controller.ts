@@ -5,6 +5,7 @@ import { CreateUserDto, LoginDto, RegisterUserDto, UpdateAuthDto } from './dto';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginResponse } from './interfaces/login-response';
 import { User } from './entities/user.entity';
+import { UpdatePassDto } from './dto/update-password';
 
 
 @Controller('auth')
@@ -13,7 +14,7 @@ export class AuthController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    return this.authService.create(createUserDto);
+    return this.authService.register(createUserDto);
   }
 
   @Post('/login')
@@ -49,6 +50,11 @@ export class AuthController {
       token: this.authService.getJwtToken({ id: user._id })
     }
 
+  }
+
+  @Patch('/uppass/:id')
+  update(@Param('id') id: string, @Body() updatePassDto: UpdatePassDto) {
+    return this.authService.updatePassword(id, updatePassDto);
   }
   
 }

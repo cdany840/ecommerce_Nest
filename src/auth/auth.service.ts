@@ -11,6 +11,7 @@ import { User } from './entities/user.entity';
 
 import { JwtPayload } from './interfaces/jwt-payload';
 import { LoginResponse } from './interfaces/login-response';
+import { UpdatePassDto } from './dto/update-password';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
    ) {}
 
   
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
     
     try {
       
@@ -50,11 +51,15 @@ export class AuthService {
 
   async register( registerDto: RegisterUserDto ): Promise<LoginResponse> {
 
-    const user = await this.create( registerDto );
+    const user = await this.createUser(registerDto);
+
+    const { password: userPassword, ...rest } = user;
+
+    const payload = { id: user._id, name: user.name, ...rest };
 
     return {
       user: user,
-      token: this.getJwtToken({ id: user._id })
+      token: this.getJwtToken(payload)
     }
   }
 
@@ -72,14 +77,37 @@ export class AuthService {
       throw new UnauthorizedException('Not valid credentials - password');
     }
 
-    const { password:_, ...rest  } = user.toJSON();
+    const { password: userPassword, ...rest } = user.toObject();
 
-      
+    const payload = { id: user.id, name: user.name, ...rest };
+    const token = this.jwtService.sign(payload);
+
     return {
-      user: rest,
-      token: this.getJwtToken({ id: user.id }),
+      user: user,
+      token: token
     }
   
+  }
+
+  async updatePassword(_id: string, updatePass: UpdatePassDto) {
+
+    const { oldPassword, newPassword, confirmPassword } = updatePass;
+    
+    const user = await this.userModel.findOne({ _id });
+    if ( !user )
+      throw new UnauthorizedException('Not valid credentials - user');
+
+    if ( bcryptjs.compareSync( oldPassword, user.password ) )
+      if (newPassword === confirmPassword) {
+        const updateUser = await this.userModel.findOneAndUpdate(
+          { _id }, 
+          { password: bcryptjs.hashSync( newPassword, 10 ) }, 
+          { new: true });
+      }
+    else 
+      throw new UnauthorizedException('Not valid credentials - password');
+
+    return "Password update";
   }
 
 

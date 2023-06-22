@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { Address } from 'src/address/entities/address.entity';
 
 @Schema()
 export class User {
@@ -14,13 +16,13 @@ export class User {
     @Prop({ required: true })
     name: string;
 
-    @Prop({ required: true, default: " " })
+    @Prop({ required: true, default: "" })
     last_name: string;
 
-    @Prop({ required: true, default: " " })
+    @Prop({ required: true, default: "" })
     phone: string;
 
-    @Prop({ required: true, default: " " })
+    @Prop({ required: true, default: "assets/img/avatar.png" })
     avatar: string;    
 
     @Prop({ default: true })
@@ -28,6 +30,9 @@ export class User {
 
     @Prop({ type: [String], default: ['user'] })
     roles: string[];
+
+    @Prop({type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Address' }] })
+    address: Address[];
 
 }
 
