@@ -3,12 +3,20 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { join } from 'path';
 import * as express from 'express';
-import * as cors from 'cors';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
+  const corsOptions: CorsOptions = {
+    origin: 'https://ecommerce-a16.vercel.app',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
+  };
+
+  app.enableCors(corsOptions);
 
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
