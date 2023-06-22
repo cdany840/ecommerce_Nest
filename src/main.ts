@@ -11,7 +11,7 @@ async function bootstrap() {
   app.enableCors();
   app.enableCors(
     { 
-      origin: ['http://localhost:4200/login'],
+      origin: ['https://backend-nestjs-seven.vercel.app/login'],
     }
   );
 
